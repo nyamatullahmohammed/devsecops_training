@@ -5,6 +5,8 @@ pipeline {
     environment {
         DOCKERHUB_USER = 'nyamatdocker'
         IMAGE_NAME = 'jenkins-docker-lab'
+        SONARQUBE = 'SonarCloud'
+        SONAR_TOKEN = credentials('Devsecopstraining')
     }
     stages {
         stage('Clean up image and container') {
