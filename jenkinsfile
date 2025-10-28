@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'nyamat-docker-agent'
+        label 'nyamat-ubuntu-a'
     }
     environment {
         DOCKERHUB_USER = 'nyamatdocker'
