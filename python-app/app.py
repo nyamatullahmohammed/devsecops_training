@@ -1,10 +1,12 @@
-# app.py
 from flask import Flask
+import requests
+
 app = Flask(__name__)
- 
+
 @app.route('/')
-def home():
-    return "Hello from S2I Flask app!"
- 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080)
+def hello():
+    return "Hello from Vulnerable App!"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+EOF
