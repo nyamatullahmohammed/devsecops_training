@@ -5,7 +5,8 @@ pipeline {
     environment {
         DOCKERHUB_USER = 'nyamatdocker'
         IMAGE_NAME = 'jenkins-docker-lab'
-        
+        SONARQUBE = 'SonarCloud'
+        SONAR_TOKEN = credentials('nyamat-sonarcloud-token')
     }
     stages {
         stage('Clean up image and container') {
@@ -24,7 +25,44 @@ pipeline {
                 }
             }
         }
-       
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarCloud') {
+                    sh '''
+                        # Ensure we're in the root where sonar-project.properties exists
+
+                        cd ${WORKSPACE}
+
+                        sonar-scanner \
+
+                          -Dsonar.projectBaseDir=python-app \
+
+                          -Dsonar.login=$SONAR_TOKEN
+
+                    '''
+
+                }
+
+            }
+
+        }
+ 
+        stage('Scan Docker Image with Trivy') {
+            steps {
+                // Scan and save report
+                sh '''
+                  mkdir -p trivy-reports
+                  trivy image --no-progress --exit-code 0 --format table -o trivy-reports/report.txt $DOCKERHUB_USER/$IMAGE_NAME
+                  cat trivy-reports/report.txt
+                '''
+            }
+        }
+
         stage('Archive Trivy Report') {
             steps {
                 archiveArtifacts artifacts: 'trivy-reports/report.txt', fingerprint: true
